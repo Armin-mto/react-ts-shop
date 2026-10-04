@@ -1,6 +1,7 @@
 import { useCart } from "../context/CartContext";
 import CartItemRow from "../components/cart/CartItemRow";
 import CartSummary from "../components/cart/CartSummary";
+import { Link } from "react-router-dom";
 
 function CartPage() {
   const { cart } = useCart();
@@ -23,6 +24,7 @@ function CartPage() {
         ))}
       </div>
       <CartSummary items={cart.items} />
+      <Link to="/checkout">ادامه</Link>
     </div>
   );
 }
