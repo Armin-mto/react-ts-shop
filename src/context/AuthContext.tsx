@@ -3,9 +3,11 @@ import type { AuthState, User } from "../types/user";
 import {
   createContext,
   useContext,
+  useEffect,
   useReducer,
   type PropsWithChildren,
 } from "react";
+import { loadFromStorage, saveToStorage } from "../hooks/useLocalStorage";
 
 type AuthAction = { type: "LOGIN"; user: User } | { type: "LOGOUT" };
 
@@ -27,10 +29,15 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [auth, dispatch] = useReducer(authReducer, {
-    user: null,
-    isAuthenticated: false,
-  });
+  const [auth, dispatch] = useReducer(
+    authReducer,
+    { user: null, isAuthenticated: false },
+    (init) => loadFromStorage("auth", init),
+  );
+
+  useEffect(() => {
+    saveToStorage("auth", auth);
+  }, [auth]);
 
   return (
     <AuthContext.Provider value={{ auth, dispatch }}>

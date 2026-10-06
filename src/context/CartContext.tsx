@@ -3,9 +3,11 @@ import type { Cart } from "../types/cart";
 import React, {
   createContext,
   useContext,
+  useEffect,
   useReducer,
   type PropsWithChildren,
 } from "react";
+import { loadFromStorage, saveToStorage } from "../hooks/useLocalStorage";
 
 type CartAction =
   | { type: "ADD_ITEM"; product: Product }
@@ -68,10 +70,15 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: PropsWithChildren) {
-  const [cart, dispatch] = useReducer(cartReducer, {
-    items: [],
-    updatedAt: new Date().toISOString(),
-  });
+  const [cart, dispatch] = useReducer(
+    cartReducer,
+    { items: [], updatedAt: new Date().toISOString() },
+    (init) => loadFromStorage("cart", init),
+  );
+
+  useEffect(() => {
+    saveToStorage("cart", cart);
+  }, [cart]);
 
   return (
     <CartContext.Provider value={{ cart, dispatch }}>
