@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ChangeEvent } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import { fakeLogin } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
 
@@ -7,17 +7,21 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { dispatch } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const user = await fakeLogin(email, password);
       dispatch({ type: "LOGIN", user });
-      navigate('/account')
+      navigate("/account");
     } catch {
       setError("رمز عبور یا نام کاربری اشتباه است");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -43,7 +47,13 @@ export default function LoginForm() {
           className="border rounded p-2"
         />
         {error && <p>{error}</p>}
-        <button type="submit">ورود</button>
+        <button
+          disabled={isSubmitting}
+          type="submit"
+          className="rounded bg-blue-600 py-2 px-4 text-white disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isSubmitting ? "در حال ورود" : "ورود"}
+        </button>
       </form>
     </div>
   );

@@ -1,5 +1,5 @@
 import type { CartItem } from "../../types/cart";
-import { useCart } from "../../context/CartContext";
+import { useCart } from "../../hooks/useCart";
 
 interface CartItemRowProps {
   item: CartItem;
@@ -9,7 +9,7 @@ function CartItemRow({ item }: CartItemRowProps) {
   const { dispatch } = useCart();
 
   return (
-    <div className="flex items-center gap-4 border-b py-2">
+    <div className="flex flex-col gap-4 border-b py-2 sm:flex-row sm:items-center">
       <img
         src={item.product.imageUrl}
         alt={item.product.name}

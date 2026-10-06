@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Product } from "../../types/product";
 import type { MouseEvent } from "react";
-import { useCart } from "../../context/CartContext";
+import { useCart } from "../../hooks/useCart";
 
 interface ProductCardProps {
   product: Product;

@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { ShippingAddress } from "../../types/order";
-import { useCart } from "../../context/CartContext";
+import { useCart } from "../../hooks/useCart";
 import { useNavigate } from "react-router-dom";
 import { placeOrder } from "../../services/orderService";
 
@@ -13,6 +13,7 @@ export default function CheckoutForm() {
     country: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { cart, dispatch } = useCart();
 
@@ -25,17 +26,19 @@ export default function CheckoutForm() {
 
     if (isInvalid) {
       setError("همه مقادیر را پر کنید");
-      return
+      return;
     } else {
+      setIsSubmitting(true);
       try {
-          await placeOrder(cart.items, address);
-          dispatch({type: 'CLEAR_CART'});
-          navigate("/order-confirmation")
+        await placeOrder(cart.items, address);
+        dispatch({ type: "CLEAR_CART" });
+        navigate("/order-confirmation");
       } catch {
-        setError("مجدد امتحان کنید")
+        setError("مجدد امتحان کنید");
+      } finally {
+        setIsSubmitting(false);
       }
     }
-
   }
 
   return (
@@ -76,8 +79,12 @@ export default function CheckoutForm() {
         className="border rounded p-2"
       />
       {error && <p className="text-red-600">{error}</p>}
-      <button type="submit" className="rounded bg-blue-600 py-2 text-white">
-        ثبت سفارش
+      <button
+        disabled={isSubmitting}
+        type="submit"
+        className="rounded bg-blue-600 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isSubmitting ? "در حال ثبت" : "ثبت سفارش"}
       </button>
     </form>
   );

@@ -2,7 +2,6 @@ import type React from "react";
 import type { AuthState, User } from "../types/user";
 import {
   createContext,
-  useContext,
   useEffect,
   useReducer,
   type PropsWithChildren,
@@ -26,7 +25,7 @@ interface AuthContextValue {
   dispatch: React.Dispatch<AuthAction>;
 }
 
-const AuthContext = createContext<AuthContextValue | null>(null);
+export const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [auth, dispatch] = useReducer(
@@ -46,10 +45,3 @@ export function AuthProvider({ children }: PropsWithChildren) {
   );
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-}

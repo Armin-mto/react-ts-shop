@@ -6,6 +6,7 @@ import { getProductById } from "../services/productService";
 type ProductDetailState =
   | { status: "loading" }
   | { status: "not-found" }
+  | { status: "error"; error: string }
   | { status: "success"; data: Product };
 
 function ProductDetailPage() {
@@ -13,13 +14,17 @@ function ProductDetailPage() {
   const [state, setState] = useState<ProductDetailState>({ status: "loading" });
 
   useEffect(() => {
-    getProductById(id!).then((data) => {
-      if (data) {
-        setState({ status: "success", data });
-      } else {
-        setState({ status: "not-found" });
-      }
-    });
+    getProductById(id!)
+      .then((data) => {
+        if (data) {
+          setState({ status: "success", data });
+        } else {
+          setState({ status: "not-found" });
+        }
+      })
+      .catch(() => {
+        setState({ status: "error", error: "خطا در دریافت محصول" });
+      });
   }, [id]);
 
   if (state.status === "loading") {
@@ -28,6 +33,10 @@ function ProductDetailPage() {
 
   if (state.status === "not-found") {
     return <p>محصول پیدا نشد</p>;
+  }
+
+  if (state.status === "error") {
+    return <p>{state.error}</p>;
   }
 
   return (
